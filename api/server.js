@@ -1,6 +1,7 @@
 var express = require('express'),
     bodyParser = require('body-parser'),
-    mongodb = require('mongodb');
+    mongodb = require('mongodb'),
+    objectId = require('mongodb').ObjectId;
 
 var app = express();
 
@@ -24,6 +25,8 @@ app.get('/', function(req, res){
     res.send({msg:'Olá'});
 });
 
+
+//POST Envia
 app.post('/api', function(req, res){
     var dados = req.body;
     db.open(function(err, mongoclient){
@@ -33,6 +36,40 @@ app.post('/api', function(req, res){
                     res.json({'status': 'erro'});
                 }else{
                     res.json({'status': 'inclusao realizada com sucesso'});
+                }
+                mongoclient.close();
+            });
+        });
+    });
+});
+
+
+//GET Recebe (ler)
+app.get('/api', function(req, res){
+    db.open(function(err, mongoclient){
+        mongoclient.collection('postagens', function(err, collection){
+            collection.find().toArray(function(err, results){
+                if(err){
+                    res.json(err);
+                }else{
+                    res.json(results);
+                }
+                mongoclient.close();
+            });
+        });
+    });
+});
+
+
+//GET ID Recebe (ler)
+app.get('/api/:id', function(req, res){
+    db.open(function(err, mongoclient){
+        mongoclient.collection('postagens', function(err, collection){
+            collection.find(objectId(req.params.id)).toArray(function(err, results){
+                if(err){
+                    res.json(err);
+                }else{
+                    res.json(results);
                 }
                 mongoclient.close();
             });
