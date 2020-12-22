@@ -69,6 +69,9 @@ app.post('/api', function(req, res){
 
 // GET(ready)
 app.get('/api', function(req, res){
+
+    res.setHeader("Access-Control-Allow-Origin", "*");
+
     db.open(function(err, mongoclient){
         mongoclient.collection('postagens', function(err, collection){
             collection.find().toArray(function(err, results){
@@ -98,6 +101,23 @@ app.get('/api/:id', function(req, res){
         });
     });
 });
+
+//READ IMAGE
+app.get('/uploads/:imagem', function(req, res){
+
+    var img = req.params.imagem;
+
+    fs.readFile('./uploads/' + img, function(err, content){
+        if(err){
+            res.status(400).json(err);
+            return;
+        }
+
+        res.writeHead(200, {'Content-type' : 'image/jpg',  });
+        res.end(content);
+    });
+});
+
 
 // PUT by ID(update)
 app.put('/api/:id', function(req, res){
